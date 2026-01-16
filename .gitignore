@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+
+# Excel temp files
+~$*.xlsx
+
+# OS junk
+.DS_Store
+Thumbs.db
