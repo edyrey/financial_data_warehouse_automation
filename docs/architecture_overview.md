@@ -1,23 +1,48 @@
 # Architecture Overview
 
-This project implements a monthly ETL pipeline for financial data.
+## Goal
+Automate monthly ingestion of semi-structured financial Excel reports into a clean warehouse fact table that supports reporting, trend analysis, and downstream BI.
 
 ## Inputs
-- Multi-sheet Excel income statements
-- One sheet per department
-- File names encode month/year
+Two monthly Excel report types:
+1) **Income Statements**
+   - Multi-sheet workbook (one worksheet per department)
+   - Revenue/Expense sections represented as header rows
+2) **Balance Sheets**
+   - Statement-style layout with subtotals and section totals
+   - GL codes appear in a fixed column; YTD amounts in a fixed column
 
-## Processing
-- Parse department sheets
-- Extract GL-level records
-- Normalize descriptions via GL reference table
-- Detect revenue vs expense categories
-- Deduplicate using natural keys
+Both file types use a filename convention containing `MM.YYYY` for date metadata.
 
-## Outputs
-- Long-format financial warehouse
-- QA table for missing GL mappings
+## Reference Data
+A Google Sheet tab (GL Reference) maintains:
+- GL Code
+- Description
+- Group
 
-Two implementations are provided:
-- Python (local/shared drive)
-- Google Apps Script (cloud-based, non-technical users)
+This reference table is used to normalize descriptions/groups and resolve typos or inconsistencies from source reports.
+
+## Output
+A long-format fact table with columns:
+- GL Code
+- Description
+- Category
+- Group
+- Year
+- Month
+- Department
+- Amount
+
+## Key Design Choices
+- **Idempotent updates:** safe to rerun; deduplication key prevents duplicates
+- **QA accumulation:** missing GL mappings persist across runs until resolved
+- **Non-technical usability:** one-click execution via Google Sheets custom menu
+- **Confidentiality:** repository uses synthetic sample content only
+
+## Execution Flow (Google Suite)
+1. Locate monthly XLSX files in Google Drive input folders
+2. Convert XLSX → temporary Google Sheet via Drive API
+3. Parse each report into normalized rows
+4. Join to GL reference (Description + Group)
+5. Append + dedupe into Final fact table
+6. Update “Missing GL Mapping” QA table (accumulative + auto-resolve)
