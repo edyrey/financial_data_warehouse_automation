@@ -1,33 +1,25 @@
-# Automated Financial Data Warehouse
+# Automated Financial Data Warehouse (Python & Google Suite)
 
-This project implements a monthly financial data warehouse automation that transforms multi-sheet income statements into a clean, deduplicated, long-format dataset.
+This project automates monthly financial reporting by transforming multi-sheet Excel statements into a clean, deduplicated, long-format warehouse table.
 
-The system was built to support non-technical stakeholders while maintaining data integrity, reproducibility, and auditability.
+It includes two implementations:
 
-## Features
-- Automated ingestion of monthly Excel income statements
-- Parsing of multi-department worksheets
-- Revenue vs expense classification
-- GL reference table normalization
-- Idempotent updates (safe re-runs)
-- QA reporting for missing GL mappings
+## ✅ Production Implementation (Google Suite)
+The current production workflow runs entirely in Google Sheets using Google Apps Script:
+- Reads monthly Excel inputs from Google Drive
+- Converts XLSX → temporary Google Sheet (Drive API)
+- Parses semi-structured statement layouts (income statements + balance sheets)
+- Normalizes GL codes using a centralized reference table (GL Code → Description + Group)
+- Appends and deduplicates records into a warehouse “Final” fact table
+- Tracks missing GL mappings in an accumulating QA sheet until resolved
 
-## Implementations
+This approach was chosen to support non-technical users and provide a one-click update workflow in a shared environment.
 
-### Python Version
-Designed for local execution or shared-drive environments.
-- Uses pandas for data wrangling
-- Appends and deduplicates monthly data
-- Preserves historical records
-
-### Google Sheets Version
-Designed for non-technical users.
-- Runs entirely in Google Sheets
-- Uses Apps Script and Drive API
-- One-click execution via custom menu
+## 🧪 Preliminary Prototype (Python)
+A Python (pandas) version was created first as a prototype to validate parsing logic and schema design and to process initial historical data. After requirements expanded to non-technical users and shared-drive execution, the workflow was migrated to Google Suite.
 
 ## Repository Structure
 ```text
-python_version/         # Python ETL implementation
-google_sheets_version/  # Google Apps Script implementation
-docs/                   # Architecture and design notes
+google_sheets_version/   # production Apps Script automation
+python_version/          # prototype pandas implementation (legacy)
+docs/                    # architecture + design notes
