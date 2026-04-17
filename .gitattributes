@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Treat Excel files as binary assets
+*.xlsx binary
+*.xls binary

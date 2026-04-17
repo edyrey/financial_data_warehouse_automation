@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+
+# Excel temp files
+~$*.xlsx
+
+# Local working data and outputs
+data/
+input/
+outputs/
+warehouse/
+
+# OS junk
+.DS_Store
+Thumbs.db
